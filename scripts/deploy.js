@@ -1,0 +1,1 @@
+"const hre = require('hardhat');\nasync function main() {\nconst SonicNFT = await hre.ethers.getContractFactory('SonicNFT');\nconst sonicNFT = await SonicNFT.deploy();\nawait sonicNFT.deployed();\nconsole.log('SonicNFT deployed to:', sonicNFT.address);\n}\nmain().catch((error) => {\nconsole.error(error);\nprocess.exitCode = 1;\n});" 
