@@ -1,1 +1,0 @@
-"import { ethers } from 'ethers';\nconst connectWallet = async () => {\nif (!window.ethereum) return alert('Install MetaMask!');\nconst provider = new ethers.providers.Web3Provider(window.ethereum);\nawait provider.send('eth_requestAccounts', []);\nconst signer = provider.getSigner();\nreturn signer;\n};\nexport default connectWallet;" 
