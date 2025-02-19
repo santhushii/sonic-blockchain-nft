@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import nftABI from "../artifacts/contracts/SonicERC1155.sol/SonicERC1155.json";
+import nftABI from "../artifacts/contracts/SonicERC1155.sol";
 
 const contractAddress = "0x904B940C2a6462A22F26bb5b23FcfFdb5Beafd2e"; // Your ERC-1155 contract
 

@@ -1,0 +1,12 @@
+{
+    "name": "NFT #2",
+    "description": "A unique NFT generated from layered assets.",
+    "image": "ipfs://bafybeihxyg5rlrazeoj25y2lcxdc6vnnd3kgiti/NFT_3.png",
+    "attributes": [
+      { "trait_type": "Background", "value": "green" },
+      { "trait_type": "Base", "value": "base_green" },
+      { "trait_type": "Eyes", "value": "eyes" },
+      { "trait_type": "Accessories", "value": "pink" }
+    ]
+  }
+  

@@ -1,54 +1,141 @@
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import { fetchNFTs } from "./utils/getNFTs";
-import NFTGallery from "./components/NFTGallery";
+import { mintNFT } from "./utils/mint";
+import { transferNFT } from "./utils/transfer";
+import { buyNFT } from "./utils/buy";
+import { fetchTransactions } from "./utils/transactions";
 
 function App() {
     const [account, setAccount] = useState(null);
-    const [nfts, setNfts] = useState([]);
+    const [transactions, setTransactions] = useState([]);
+    const [mintData, setMintData] = useState({ to: "", amount: 1, tokenURI: "" });
+    const [transferData, setTransferData] = useState({ to: "", tokenId: "", amount: 1 });
+    const [buyData, setBuyData] = useState({ tokenId: "", price: "" });
 
-    // Connect MetaMask Wallet
+    useEffect(() => {
+        if (account) {
+            loadTransactions();
+        }
+    }, [account]);
+
     const connectWallet = async () => {
         if (window.ethereum) {
-            try {
-                const provider = new ethers.BrowserProvider(window.ethereum);
-                const signer = await provider.getSigner();
-                setAccount(await signer.getAddress());
-
-                // Load NFTs after connecting
-                loadNFTs();
-            } catch (error) {
-                console.error("Wallet connection failed:", error);
-            }
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
+            setAccount(await signer.getAddress());
         } else {
             alert("MetaMask not detected!");
         }
     };
 
-    // Load NFTs from Blockchain
-    const loadNFTs = async () => {
-        const items = await fetchNFTs();
-        setNfts(items);
+    const loadTransactions = async () => {
+        const txs = await fetchTransactions();
+        setTransactions(txs);
     };
 
-    useEffect(() => {
-        if (account) loadNFTs();
-    }, [account]);
+    const handleMint = async () => {
+        await mintNFT(mintData.to, mintData.amount, mintData.tokenURI);
+        loadTransactions();
+    };
+
+    const handleTransfer = async () => {
+        await transferNFT(account, transferData.to, transferData.tokenId, transferData.amount);
+        loadTransactions();
+    };
+
+    const handleBuy = async () => {
+        await buyNFT(buyData.tokenId, buyData.price);
+        loadTransactions();
+    };
 
     return (
-        <div style={{ textAlign: "center", padding: "20px", backgroundColor: "#f8f8f8", minHeight: "100vh" }}>
-            <h1>Sonic ERC-1155 NFT Collection</h1>
+        <div style={{ textAlign: "center", padding: "20px" }}>
+            <h1>Sonic NFT Marketplace</h1>
 
-            {/* Wallet Connection */}
-            <button 
-                onClick={connectWallet} 
-                style={{ padding: "10px 20px", fontSize: "16px", margin: "10px", cursor: "pointer", backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "5px" }}>
+            {/* Connect Wallet Button */}
+            <button onClick={connectWallet} style={{ padding: "10px 20px", fontSize: "16px", margin: "10px" }}>
                 {account ? `Connected: ${account.slice(0, 6)}...${account.slice(-4)}` : "Connect Wallet"}
             </button>
 
-            {/* Display User's NFT Collection */}
-            <h2>My NFT Collection</h2>
-            <NFTGallery nfts={nfts} />
+            {/* Mint NFT Section */}
+            <div>
+                <h2>Mint NFT</h2>
+                <input 
+                    type="text" 
+                    placeholder="Recipient Address" 
+                    value={mintData.to} 
+                    onChange={(e) => setMintData({ ...mintData, to: e.target.value })} 
+                />
+                <input 
+                    type="number" 
+                    placeholder="Amount" 
+                    value={mintData.amount} 
+                    onChange={(e) => setMintData({ ...mintData, amount: e.target.value })} 
+                />
+                <input 
+                    type="text" 
+                    placeholder="Token URI" 
+                    value={mintData.tokenURI} 
+                    onChange={(e) => setMintData({ ...mintData, tokenURI: e.target.value })} 
+                />
+                <button onClick={handleMint}>Mint NFT</button>
+            </div>
+
+            {/* Transfer NFT Section */}
+            <div>
+                <h2>Transfer NFT</h2>
+                <input 
+                    type="text" 
+                    placeholder="Recipient Address" 
+                    value={transferData.to} 
+                    onChange={(e) => setTransferData({ ...transferData, to: e.target.value })} 
+                />
+                <input 
+                    type="text" 
+                    placeholder="Token ID" 
+                    value={transferData.tokenId} 
+                    onChange={(e) => setTransferData({ ...transferData, tokenId: e.target.value })} 
+                />
+                <input 
+                    type="number" 
+                    placeholder="Amount" 
+                    value={transferData.amount} 
+                    onChange={(e) => setTransferData({ ...transferData, amount: e.target.value })} 
+                />
+                <button onClick={handleTransfer}>Transfer NFT</button>
+            </div>
+
+            {/* Buy NFT Section */}
+            <div>
+                <h2>Buy NFT</h2>
+                <input 
+                    type="text" 
+                    placeholder="Token ID" 
+                    value={buyData.tokenId} 
+                    onChange={(e) => setBuyData({ ...buyData, tokenId: e.target.value })} 
+                />
+                <input 
+                    type="text" 
+                    placeholder="Price in ETH" 
+                    value={buyData.price} 
+                    onChange={(e) => setBuyData({ ...buyData, price: e.target.value })} 
+                />
+                <button onClick={handleBuy}>Buy NFT</button>
+            </div>
+
+            {/* Transaction History */}
+            <h2>Transaction History</h2>
+            <div>
+                {transactions.length > 0 ? (
+                    transactions.map((tx, index) => (
+                        <p key={index}>
+                            NFT #{tx.tokenId} transferred from {tx.from} to {tx.to}
+                        </p>
+                    ))
+                ) : (
+                    <p>No Transactions Found</p>
+                )}
+            </div>
         </div>
     );
 }

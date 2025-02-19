@@ -5,7 +5,7 @@ const NFTGallery = ({ nfts }) => {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "20px", marginTop: "20px" }}>
             {nfts.length > 0 ? (
                 nfts.map((nft) => {
-                    // ✅ Convert IPFS URL properly
+                    //  Convert IPFS URL properly
                     let imageUrl = nft.image;
                     if (imageUrl.startsWith("ipfs://")) {
                         imageUrl = imageUrl.replace("ipfs://", "https://ipfs.io/ipfs/");

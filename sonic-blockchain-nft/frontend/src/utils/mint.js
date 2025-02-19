@@ -1,9 +1,8 @@
 import { ethers } from "ethers";
-import nftABI from "../artifacts/contracts/SonicNFT.sol/SonicNFT.json";
+import nftABI from "../artifacts/contracts/SonicERC1155.sol/SonicERC1155.json";
+import { contractAddress } from "./contract";
 
-const contractAddress = "0xFB45499bC31783d7F6A068eb5400714881bC1de0"; // Your deployed contract
-
-export const mintNFT = async (tokenURI) => {
+export const mintNFT = async (to, amount, tokenURI) => {
     if (!window.ethereum) {
         alert("MetaMask not detected!");
         return;
@@ -14,11 +13,11 @@ export const mintNFT = async (tokenURI) => {
     const contract = new ethers.Contract(contractAddress, nftABI.abi, signer);
 
     try {
-        const tx = await contract.mintNFT(await signer.getAddress(), tokenURI);
+        const tx = await contract.mint(to, amount, tokenURI);
         await tx.wait();
         alert("NFT Minted Successfully!");
     } catch (error) {
-        console.error("Minting failed", error);
-        alert("Minting failed!");
+        console.error("Minting Failed:", error);
+        alert("Transaction Failed!");
     }
 };
